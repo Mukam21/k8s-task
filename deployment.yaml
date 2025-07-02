@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  labels:
+    app: web-app
+spec:
+  replicas: 2  
+  selector:
+    matchLabels:
+      app: web-app
+  strategy:
+    type: RollingUpdate  
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: "topology.kubernetes.io/zone" 
+                labelSelector:
+                  matchLabels:
+                    app: web-app
+      containers:
+        - name: web-app
+          image: your-registry/web-app:latest
+          resources:
+            requests:
+              cpu: "100m"      
+              memory: "128Mi"
+            limits:
+              cpu: "500m"       
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10  
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          ports:
+            - containerPort: 8080
