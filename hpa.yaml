@@ -7,12 +7,12 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: web-app
-  minReplicas: 2   # Минимум для отказоустойчивости
-  maxReplicas: 6   # Чуть больше 4 для запаса
+  minReplicas: 2  
+  maxReplicas: 6   
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 60  # При 60% среднего использования CPU масштабировать
+          averageUtilization: 60  
